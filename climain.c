@@ -6,7 +6,7 @@
 /*   By: admadene <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 17:36:57 by admadene          #+#    #+#             */
-/*   Updated: 2021/10/21 15:46:53 by admadene         ###   ########.fr       */
+/*   Updated: 2021/10/21 15:51:16 by admadene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	send_char(char c, int pid)
 	}
 }
 
-#include <stdio.h>
 int	main(int ac, char **av)
 {
 	int	pid;
@@ -61,7 +60,6 @@ int	main(int ac, char **av)
 		return (0);
 	}
 	pid = ft_atoi(av[1]);
-	printf("%d\n", pid);
 	if (pid <= 0)
 	{
 		write(2, "Error: Bad arguments!\n", 23);
