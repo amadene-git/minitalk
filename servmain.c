@@ -6,15 +6,11 @@
 /*   By: admadene <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 17:58:18 by admadene          #+#    #+#             */
-/*   Updated: 2021/10/21 15:40:29 by admadene         ###   ########.fr       */
+/*   Updated: 2021/10/21 15:53:14 by admadene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-
-typedef void (*sighandler_t)(int);
-void sighandler(int signo);
-sighandler_t signal(int signum, sighandler_t handler);
 
 void	ft_putnbr(int nbr)
 {

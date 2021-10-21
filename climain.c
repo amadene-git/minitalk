@@ -6,7 +6,7 @@
 /*   By: admadene <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 17:36:57 by admadene          #+#    #+#             */
-/*   Updated: 2021/10/21 15:51:16 by admadene         ###   ########.fr       */
+/*   Updated: 2021/10/21 15:58:43 by admadene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,6 @@ int	main(int ac, char **av)
 	}
 	while (*av[2])
 		send_char(*(av[2]++), pid);
+	send_char(*(av[2]), pid);
 	return (0);
 }
