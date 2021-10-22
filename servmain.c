@@ -6,7 +6,7 @@
 /*   By: admadene <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 17:58:18 by admadene          #+#    #+#             */
-/*   Updated: 2021/10/21 15:53:14 by admadene         ###   ########.fr       */
+/*   Updated: 2021/10/22 14:06:48 by admadene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ void	ft_putnbr(int nbr)
 	write(1, &c, 1);
 }
 
-void	sighandler(int signo)
+static int	i = 0;
+static char	c = 0;
+
+void	handler(int signo)
 {
-	static int	i = 0;
-	static char	c = 0;
 
 	if (i < 0 || i >= 8)
 	{
@@ -42,14 +43,43 @@ void	sighandler(int signo)
 	}
 }
 
+void	sighandler(int signo, siginfo_t *info, void *ptr)
+{
+	(void)info;
+	(void)ptr;	
+	if (signo == SIGUSR1)
+		i++;
+	if (signo == SIGUSR2)
+	{
+		c += 1 * (1 << i);
+		i++;
+	}
+	if (i < 0 || i >= 8)
+	{
+		write(1, &c, 1);
+		i = 0;
+		c = 0;
+	}
+}
+
 int	main(void)
 {
 	ft_putnbr((int)getpid());
-	signal(SIGUSR1, SIG_IGN);
-	signal(SIGUSR2, SIG_IGN);
-	signal(SIGUSR1, sighandler);
-	signal(SIGUSR2, sighandler);
+	struct sigaction	sa;
+	sigset_t			mask;
+
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGUSR1);
+	sigaddset(&mask, SIGUSR2);
+	sa.sa_mask	= mask;
+	sa.sa_handler = NULL;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = sighandler;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+
+
 	while (1)
-		continue ;
+		pause();
 	return (0);
 }
