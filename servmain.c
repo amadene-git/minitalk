@@ -43,9 +43,10 @@ void	handler(int signo)
 	}
 }
 
+char	line[32000] = {0};
+
 void	sighandler(int signo, siginfo_t *info, void *ptr)
 {
-	(void)info;
 	(void)ptr;	
 	if (signo == SIGUSR1)
 		i++;
@@ -56,10 +57,13 @@ void	sighandler(int signo, siginfo_t *info, void *ptr)
 	}
 	if (i < 0 || i >= 8)
 	{
+		
 		write(1, &c, 1);
 		i = 0;
 		c = 0;
 	}
+	usleep(50);
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main(void)
@@ -77,7 +81,6 @@ int	main(void)
 	sa.sa_sigaction = sighandler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
-
 
 	while (1)
 		pause();

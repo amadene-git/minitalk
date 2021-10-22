@@ -45,9 +45,18 @@ void	send_char(char c, int pid)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		usleep(20);
+		pause();
 		c = c >> 1;
 	}
+	usleep(20);
+}
+
+
+void	sighandler(int signo, siginfo_t *info, void *ptr)
+{
+	(void)signo;
+	(void)info;
+	(void)ptr;
 }
 
 int	main(int ac, char **av)
@@ -60,6 +69,20 @@ int	main(int ac, char **av)
 		return (0);
 	}
 	pid = ft_atoi(av[1]);
+	struct sigaction	sa;
+	sigset_t			mask;
+
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGUSR1);
+	sigaddset(&mask, SIGUSR2);
+	sa.sa_mask	= mask;
+	sa.sa_handler = NULL;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = sighandler;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+
+
 	if (pid <= 0)
 	{
 		write(2, "Error: Bad arguments!\n", 23);
