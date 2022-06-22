@@ -22,67 +22,50 @@ void	ft_putnbr(int nbr)
 	write(1, &c, 1);
 }
 
-static int	i = 0;
-static char	c = 0;
-
-void	handler(int signo)
-{
-
-	if (i < 0 || i >= 8)
-	{
-		write(1, &c, 1);
-		i = 0;
-		c = 0;
-	}
-	if (signo == SIGUSR1)
-		i++;
-	if (signo == SIGUSR2)
-	{
-		c += 1 * (1 << i);
-		i++;
-	}
-}
-
-char	line[32000] = {0};
-
 void	sighandler(int signo, siginfo_t *info, void *ptr)
 {
-	(void)ptr;	
+	static char	c = 0;
+	static int	i = 0;
+
+	(void)ptr;
 	if (signo == SIGUSR1)
 		i++;
-	if (signo == SIGUSR2)
+	else if (signo == SIGUSR2)
 	{
 		c += 1 * (1 << i);
 		i++;
 	}
 	if (i < 0 || i >= 8)
 	{
-		
 		write(1, &c, 1);
 		i = 0;
 		c = 0;
 	}
-	usleep(50);
-	kill(info->si_pid, SIGUSR1);
+	if (kill(info->si_pid, SIGUSR1) == -1)
+	{
+		write(2, "Server error\n", 13);
+		exit(EXIT_FAILURE);
+	}
 }
 
 int	main(void)
 {
-	ft_putnbr((int)getpid());
 	struct sigaction	sa;
 	sigset_t			mask;
 
+	write(1, "PID: ", 5);
+	ft_putnbr((int)getpid());
+	write(1, "\n", 1);
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGUSR1);
 	sigaddset(&mask, SIGUSR2);
-	sa.sa_mask	= mask;
+	sa.sa_mask = mask;
 	sa.sa_handler = NULL;
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = sighandler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
-
 	while (1)
-		pause();
+		;
 	return (0);
 }

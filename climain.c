@@ -12,6 +12,8 @@
 
 #include "minitalk.h"
 
+static char	g_recept = 0;
+
 int	ft_atoi(const char *str)
 {
 	long int	nb;
@@ -42,52 +44,54 @@ void	send_char(char c, int pid)
 	while (++i < 8)
 	{
 		if (c % 2)
-			kill(pid, SIGUSR2);
-		else
-			kill(pid, SIGUSR1);
-		pause();
+		{
+			if (kill(pid, SIGUSR2) == -1)
+			{
+				write(2, "Client error\n", 13);
+				exit(EXIT_FAILURE);
+			}
+		}
+		else if (kill(pid, SIGUSR1) == -1)
+		{
+			write(2, "Client error\n", 13);
+			exit(EXIT_FAILURE);
+		}
 		c = c >> 1;
+		while (!g_recept)
+			;
+		g_recept = 0;
 	}
-	usleep(20);
 }
-
 
 void	sighandler(int signo, siginfo_t *info, void *ptr)
 {
 	(void)signo;
 	(void)info;
 	(void)ptr;
+	g_recept = 1;
 }
 
 int	main(int ac, char **av)
 {
-	int	pid;
+	int					pid;
+	struct sigaction	sa;
+	sigset_t			mask;
 
-	if (ac != 3)
+	if (ac != 3 || ft_atoi(av[1]) <= 0)
 	{
 		write(2, "Error: Bad arguments!\n", 23);
 		return (0);
 	}
 	pid = ft_atoi(av[1]);
-	struct sigaction	sa;
-	sigset_t			mask;
-
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGUSR1);
 	sigaddset(&mask, SIGUSR2);
-	sa.sa_mask	= mask;
+	sa.sa_mask = mask;
 	sa.sa_handler = NULL;
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = sighandler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
-
-
-	if (pid <= 0)
-	{
-		write(2, "Error: Bad arguments!\n", 23);
-		return (0);
-	}
 	while (*av[2])
 		send_char(*(av[2]++), pid);
 	send_char(*(av[2]), pid);

@@ -22,9 +22,15 @@ CC		=	clang
 
 all		:	${NAME}
 
-${NAME}	:	${CLIOBJ} ${SERVOBJ}
+${NAME}	:	${CLIENT} ${SERVER} 
+
+
+${CLIENT}:	${CLIOBJ}
 				${CC}  ${FLAG} -o ${CLIENT} ${CLIOBJ}
+
+${SERVER}:	${SERVOBJ}
 				${CC}  ${FLAG} -o ${SERVER} ${SERVOBJ}
+
 
 
 clean	:

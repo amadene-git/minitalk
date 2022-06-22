@@ -16,13 +16,11 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <unistd.h>
+# include <stdlib.h>
 
-typedef void (*sighandler_t)(int);
-
-sighandler_t	signal(int signum, sighandler_t handler);
 void			ft_putnbr(int nbr);
-void			handler(int signo);
 void			sighandler(int signo, siginfo_t *info, void *ptr);
 int				ft_atoi(const char *str);
 void			send_char(char c, int pid);
+
 #endif
